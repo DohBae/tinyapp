@@ -8,7 +8,7 @@ app.set("view engine", "ejs");
 function generateRandomStrings() {}
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
+  "b2xVn2": "http://www.lighthouselabs.ca", //KEY
   "9sm5xk": "http://www.google.com"
 };
 
@@ -41,6 +41,15 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase};
   res.render("urls_show", templateVars);
 });
+
+// saves id and longURL key value pair to urlDatabase
+app.post("/urls", (req, res) => {
+  const id = generateRandomStrings()
+  const longURL = req.body.longURL
+  urlDatabase.id = longURL
+  //second thumb
+
+})
 
 // Allow us to see the new form in the browser
 app.post("/urls", (req, res) => {
