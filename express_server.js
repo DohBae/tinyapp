@@ -47,9 +47,8 @@ app.post("/urls", (req, res) => {
   const id = generateRandomStrings()
   const longURL = req.body.longURL
   urlDatabase.id = longURL
-  //second thumb
-
-})
+  res.redirect("/urls/:id");
+});
 
 // Allow us to see the new form in the browser
 app.post("/urls", (req, res) => {
