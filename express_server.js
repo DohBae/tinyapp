@@ -5,7 +5,18 @@ const PORT = 8080;
 app.set("view engine", "ejs");
 
 // Simulates generation of unique short URL id's
-function generateRandomStrings() {}
+const generateRandomStrings = function() {
+  const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+  // const alphabetArray = alphabet.split("");
+  // const numbersArray = numbers.split("");
+  const alphaNumeric = alphabet + numbers;
+  let resultArray = [];
+  for (let i = 0; i < 6; i++) {
+    resultArray.push(alphaNumeric[Math.floor(Math.random() * alphaNumeric.length)]);
+  }
+  return resultArray.join("");
+};
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -22,6 +33,7 @@ app.get("/", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+  console.log(urlDatabase);
 });
 
 app.get("/hello", (req, res) => {
@@ -48,21 +60,31 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const id = generateRandomStrings();
   const longURL = req.body.longURL;
-  urlDatabase.id = longURL;
-  res.redirect("/urls/:id");
+  urlDatabase[id] = longURL;
+  res.redirect("/urls");
 });
 
 // Allow us to see the short URL and long URL in the browser
-app.post("/urls", (req, res) => {
-  console.log(req.body); //Log the POST request body to the console
-  res.send("Ok"); //Respond with "OK" (will be replaced)
-});
+// app.post("/urls", (req, res) => {
+//   console.log(req.body); //Log the POST request body to the console
+//   res.send("Ok"); //Respond with "OK" (will be replaced)
+// });
 
 // redirects short URL to the long URL website
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   console.log(urlDatabase[shortURL]);
   res.redirect(urlDatabase[shortURL]);
+});
+
+// replaces old url with edited one
+app.post("/urls/:id", (req, res) => {
+  const { id } = req.params;
+  const longURL = req.body.longURL;
+  if (urlDatabase[id]) {
+    urlDatabase[id] = longURL;
+  }
+  res.redirect("/urls");
 });
 
 // remove the url when delete button is pressed
@@ -75,6 +97,8 @@ app.post("/urls/:id/delete", (req, res) => {
     }
   }
 });
+// edits url
+
 ///////////////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////////////
