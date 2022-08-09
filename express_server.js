@@ -43,6 +43,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 // saves id and longURL key value pair to urlDatabase
+// check to see if correct
 app.post("/urls", (req, res) => {
   const id = generateRandomStrings()
   const longURL = req.body.longURL
@@ -55,6 +56,13 @@ app.post("/urls", (req, res) => {
   console.log(req.body); //Log the POST request body to the console
   res.send("Ok"); //Respond with "OK" (will be replaced)
 });
+// check to see if correct
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id;
+  console.log(urlDatabase[shortURL])
+  res.redirect(urlDatabase[shortURL]);
+  
+})
 ///////////////////////////////////////////////////////////////////////////////////////
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
