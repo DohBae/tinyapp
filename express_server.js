@@ -4,7 +4,8 @@ const cookieParser = require('cookie-parser')
 const PORT = 8080;
 
 app.set("view engine", "ejs");
-
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true}));
 
 // Simulates generation of unique short URL id's
 const generateRandomStrings = function() {
@@ -25,7 +26,6 @@ const urlDatabase = {
   "9sm5xk": "http://www.google.com"
 };
 
-app.use(express.urlencoded({ extended: true}));
 ///////////////////////////////////////////////////////////////////////////////////////
 // Routes for different pages of the url maker
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -43,21 +43,26 @@ app.get("/hello", (req, res) => {
 });
 // passes URL data to template
 app.get("/urls", (req, res) => {
-  username: req.cookies["username"];
-  const templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase, username: null };
+  if (req.cookies["name"] !== "undefined") {
+    templateVars = { urls: urlDatabase, username: req.cookies["name"] };
+  }
+
+  console.log()
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  username: req.cookies["username"];
-  res.render("urls_new");
+  const username = req.cookies["name"];
+  const templateVars = { username };
+  res.render("urls_new", templateVars);
 });
 // displays a single URL and it's shortened form
 app.get("/urls/:id", (req, res) => {
-  username: req.cookies["username"];
+  const username = req.cookies["name"];
   const {id} = req.params;
   const longURL = urlDatabase[id];
-  const templateVars = { id, longURL };
+  const templateVars = { id, longURL, username };
   res.render("urls_show", templateVars);
 });
 
@@ -104,13 +109,20 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 // cookie to remember username for login
-app.use(cookieParser());
 app.post("/login", (req, res) => {
+  console.log(req.body);
   const username = req.body.username;
   console.log("Cookies:", req.cookies)
   res.cookie('name', username);
   res.redirect("/urls");
 });
+
+// clear cookie
+app.post("/logout", (req, res) => {
+  const username = req.body.username;
+  res.clearCookie('name', username)
+  res.redirect("/urls");
+})
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //
