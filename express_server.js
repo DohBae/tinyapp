@@ -1,8 +1,10 @@
 const express = require("express");
 const app = express();
+const cookieParser = require('cookie-parser')
 const PORT = 8080;
 
 app.set("view engine", "ejs");
+
 
 // Simulates generation of unique short URL id's
 const generateRandomStrings = function() {
@@ -41,15 +43,18 @@ app.get("/hello", (req, res) => {
 });
 // passes URL data to template
 app.get("/urls", (req, res) => {
+  username: req.cookies["username"];
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+  username: req.cookies["username"];
   res.render("urls_new");
 });
 // displays a single URL and it's shortened form
 app.get("/urls/:id", (req, res) => {
+  username: req.cookies["username"];
   const {id} = req.params;
   const longURL = urlDatabase[id];
   const templateVars = { id, longURL };
@@ -77,7 +82,7 @@ app.get("/u/:id", (req, res) => {
   res.redirect(urlDatabase[shortURL]);
 });
 
-// replaces old url with edited one
+// edits and replaces long URL
 app.post("/urls/:id", (req, res) => {
   const { id } = req.params;
   const longURL = req.body.longURL;
@@ -97,7 +102,15 @@ app.post("/urls/:id/delete", (req, res) => {
     }
   }
 });
-// edits url
+
+// cookie to remember username for login
+app.use(cookieParser());
+app.post("/login", (req, res) => {
+  const username = req.body.username;
+  console.log("Cookies:", req.cookies)
+  res.cookie('name', username);
+  res.redirect("/urls");
+});
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //
