@@ -167,9 +167,14 @@ app.post("/register", (req, res) => {
   users[id] = user
   res.cookie('user_id', id)
   res.redirect("/urls")
-  
 });
 
+// login page
+app.get("/login", (req, res) => {
+  const user = users[req.cookies["user_id"]]
+  let templateVars = { user: user }
+  res.render("user-login", templateVars)//links and displays login_page.ejs to the browser page
+});
 ///////////////////////////////////////////////////////////////////////////////////////
 //PART OF THE SERVER
 ///////////////////////////////////////////////////////////////////////////////////////
