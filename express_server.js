@@ -37,23 +37,12 @@ const users = {
 const getUserByEmail = function (userEmail, usersDatabase) {
  for (let user in usersDatabase) {
   if (usersDatabase[user]["email"] === userEmail) {
-    return usersDatabase[user["id"]]
+    return usersDatabase[user]
   }
   }
- }
-  
-  // const email = users.email
-  // const password = users.password
-  // let errorMessage = "";
-  // // if email or password are empty strings, respond with 400
-  // if (email === "" || password === "") {
-  //   errorMessage = "400 Error: please enter valid email or password";
-  // }
-  // // if someone tries to register with an email that's in use, respond with 400
-  // if (email === email) {
-  //   errorMessage = "400 Error: email already registered"
-  // }
-  // return errorMessage
+  return null
+ };
+ 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Routes for different pages of the url maker
@@ -130,10 +119,20 @@ app.post("/urls/:id/delete", (req, res) => {
 
 // cookie to remember username for login
 app.post("/login", (req, res) => {
-  const user = users[req.cookies["user_id"]]
-  let templateVars = { user: user }
+  // const user = users[req.cookies["user_id"]]
+  const email = req.body.email;
+  const password = req.body.password;
+  // let templateVars = { user: user }
+  const user = getUserByEmail(email, users);
+  if (email === "") {
+    res.status(403).send("403 Error: email not found")
+  }
+  if (user.password !== password) {
+    res.status(403).send("403 Error: password does not match")
+  }
 
-  res.render(templateVars);
+  // res.render(templateVars);
+  res.cookie('user_id', user.id)
   res.redirect("/urls");
 });
 
