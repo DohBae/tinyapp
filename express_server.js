@@ -90,24 +90,29 @@ app.post("/urls", (req, res) => {
   const id = generateRandomStrings();
   const longURL = req.body.longURL;
   urlDatabase[id] = longURL;
-  res.redirect("/urls");
 });
 
 // redirects short URL to the long URL website
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  console.log(urlDatabase[shortURL]);
-  res.redirect(urlDatabase[shortURL]);
+  if (shortURL) {
+    res.redirect(urlDatabase[shortURL]);
+  }
+  res.status(400).send("400 Error: URL doesn't exist")
 });
 
 // edits and replaces long URL
 app.post("/urls/:id", (req, res) => {
+  const user = users[req.cookies["user_id"]]
   const { id } = req.params;
   const longURL = req.body.longURL;
-  if (urlDatabase[id]) {
-    urlDatabase[id] = longURL;
+  if (user) {
+    if (urlDatabase[id]) {
+      urlDatabase[id] = longURL;
+    }
+    res.redirect("/urls");
   }
-  res.redirect("/urls");
+  res.status(400).send("400 Error: please login to make changes to URLs")
 });
 
 // remove the url when delete button is pressed
