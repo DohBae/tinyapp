@@ -5,6 +5,7 @@ const PORT = 8080;
 const morgan = require("morgan");
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
+const { getUserByEmail } = require('./helpers');
 
 app.set("view engine", "ejs");
 app.use(cookieSession({
@@ -27,7 +28,6 @@ const generateRandomStrings = function() {
   return resultArray.join("");
 };
 
-
 const urlDatabase = {
   // b2xVn2: {
   //   longURL: "http://www.lighthouselabs.ca",
@@ -47,14 +47,16 @@ const users = {
   },
 };
 
-const getUserByEmail = function(userEmail, usersDatabase) {
-  for (let user in usersDatabase) {
-    if (usersDatabase[user]["email"] === userEmail) {
-      return usersDatabase[user];
-    }
-  }
-  return null;
-};
+// old in case i break it
+// // look up users by their email in users database
+// const getUserByEmail = function(userEmail, usersDatabase) {
+//   for (let user in usersDatabase) {
+//     if (usersDatabase[user]["email"] === userEmail) {
+//       return usersDatabase[user];
+//     }
+//   }
+//   return null;
+// };
 
 const urlsForUser = function(user) {
   let userOnlyUrlDatabase = {};
