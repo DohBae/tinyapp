@@ -47,17 +47,6 @@ const users = {
   },
 };
 
-// old in case i break it
-// // look up users by their email in users database
-// const getUserByEmail = function(userEmail, usersDatabase) {
-//   for (let user in usersDatabase) {
-//     if (usersDatabase[user]["email"] === userEmail) {
-//       return usersDatabase[user];
-//     }
-//   }
-//   return null;
-// };
-
 const urlsForUser = function(user) {
   let userOnlyUrlDatabase = {};
   for (const url in urlDatabase) {
