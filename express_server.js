@@ -31,14 +31,14 @@ const generateRandomStrings = function() {
 
 
 const urlDatabase = {
-  b2xVn2: {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "userRandomID",
-  },
-  "9sm5xk": {
-    longURL: "http://www.google.com",
-    userID: "userRandomID",
-  },
+  // b2xVn2: {
+  //   longURL: "http://www.lighthouselabs.ca",
+  //   userID: "userRandomID",
+  // },
+  // "9sm5xk": {
+  //   longURL: "http://www.google.com",
+  //   userID: "userRandomID",
+  // },
 };
 
 const users = {
@@ -161,10 +161,17 @@ app.post("/urls/:id/delete", (req, res) => {
   const user = users[req.session["user_id"]];
   // const user = users[req.cookies["user_id"]]; <--- old in case i break it
   const { id } = req.params;
-  for (let shortURL in urlDatabase) {
+  console.log(req.params);
+  // console.log(urlDatabase)
+  // console.log(urlDatabase[id])  
+  // const longURL = urlDatabase[shortID].longURL
+  // console.log("SHORT URL: ", shortURL)
+  // console.log("URL DATABASE: ", urlDatabase)
+  for (let shortID in urlDatabase) {
+    // console.log("USER ID:", userID)
     if (user) {
-      if (shortURL === id) {
-        delete urlDatabase[shortURL];
+      if (shortID === id) {
+        delete urlDatabase[id];
       }
       res.redirect("/urls");
     }
