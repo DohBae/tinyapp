@@ -70,8 +70,12 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const user = users[req.cookies["user_id"]]
   const templateVars = { user };
-  res.render("urls_new", templateVars);
+  if (user) {
+    res.render("urls_new", templateVars);
+  }
+  res.redirect("/login");
 });
+
 // displays a single URL and it's shortened form
 app.get("/urls/:id", (req, res) => {
   const user = users[req.cookies["user_id"]]
@@ -172,7 +176,9 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
   const user = users[req.cookies["user_id"]]
   let templateVars = { user: user }
+
   res.render("user-login", templateVars)//links and displays login_page.ejs to the browser page
+  res.redirect("/urs")
 });
 ///////////////////////////////////////////////////////////////////////////////////////
 //PART OF THE SERVER
