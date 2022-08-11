@@ -92,13 +92,18 @@ app.post("/urls", (req, res) => {
   urlDatabase[id] = longURL;
 });
 
-// redirects short URL to the long URL website
+// redirects short URL to the long URL website 
 app.get("/u/:id", (req, res) => {
+  // const { id } = req.body
+  // console.log("ID: ", id)
+  // const longURL = req.body.longURL
+  // console.log("LONG URL : ", longURL)
   const shortURL = req.params.id;
-  if (shortURL) {
+  // const longURL = 
+  // if (shortURL === id) {
     res.redirect(urlDatabase[shortURL]);
-  }
-  res.status(400).send("400 Error: URL doesn't exist")
+  // }
+  // res.status(400).send("400 Error: URL doesn't exist")
 });
 
 // edits and replaces long URL
@@ -117,13 +122,17 @@ app.post("/urls/:id", (req, res) => {
 
 // remove the url when delete button is pressed
 app.post("/urls/:id/delete", (req, res) => {
+  const user = users[req.cookies["user_id"]]
   const { id } = req.params;
   for (let shortURL in urlDatabase) {
-    if (shortURL === id) {
-      delete urlDatabase[shortURL];
+    if (user) {
+      if (shortURL === id) {
+        delete urlDatabase[shortURL];
+      }
       res.redirect("/urls");
     }
   }
+  res.status(400).send("400 Error: please login to make changes to URLs")
 });
 
 // cookie to remember username for login
@@ -155,6 +164,9 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   const user = users[req.cookies["user_id"]]
   let templateVars = { user: user }
+  if (user) {
+    res.redirect("/urls")
+  }
   res.render("registration_page", templateVars)//links and displays registration_page.ejs to the browser page
 });
 
@@ -181,9 +193,10 @@ app.post("/register", (req, res) => {
 app.get("/login", (req, res) => {
   const user = users[req.cookies["user_id"]]
   let templateVars = { user: user }
-
+if (user) {
+  res.redirect("/urls")
+}
   res.render("user-login", templateVars)//links and displays login_page.ejs to the browser page
-  res.redirect("/urs")
 });
 ///////////////////////////////////////////////////////////////////////////////////////
 //PART OF THE SERVER
