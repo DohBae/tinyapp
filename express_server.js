@@ -29,14 +29,7 @@ const generateRandomStrings = function() {
 };
 
 const urlDatabase = {
-  // b2xVn2: {
-  //   longURL: "http://www.lighthouselabs.ca",
-  //   userID: "userRandomID",
-  // },
-  // "9sm5xk": {
-  //   longURL: "http://www.google.com",
-  //   userID: "userRandomID",
-  // },
+  
 };
 
 const users = {
