@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-// const cookieParser = require('cookie-parser');
 const cookieSession = require("cookie-session");
 const PORT = 8080;
 const morgan = require("morgan");
@@ -8,12 +7,11 @@ const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 
 app.set("view engine", "ejs");
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['hello'],
   maxAge: 24 * 60 * 60 * 1000 //24 hours
-}))
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
@@ -87,8 +85,7 @@ app.get("/hello", (req, res) => {
 
 // passes URL data to template
 app.get("/urls", (req, res) => {
-  const user = users[req.session["user_id"]]
-  // const user = users[req.cookies["user_id"]];  <--- old in case i break it
+  const user = users[req.session["user_id"]];
   if (user) {
     const userDatabase = urlsForUser(user);
     let templateVars = { urls: userDatabase, user: user };
@@ -99,7 +96,6 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const user = users[req.session["user_id"]];
-  // const user = users[req.cookies["user_id"]]; <--- old in case i break it
   const templateVars = { user };
   if (user) {
     res.render("urls_new", templateVars);
@@ -109,8 +105,7 @@ app.get("/urls/new", (req, res) => {
 
 // displays a single URL and it's shortened form
 app.get("/urls/:id", (req, res) => {
-  const user = users[req.session["user_id"]]
-  // const user = users[req.cookies["user_id"]]; <--- old in case i break it
+  const user = users[req.session["user_id"]];
   if (user) {
     const { id } = req.params;
     const longURL = urlDatabase[id].longURL;
@@ -127,7 +122,6 @@ app.post("/urls", (req, res) => {
   urlDatabase[id] = {
     longURL,
     userID: req.session["user_id"]};
-    // userID: req.cookies["user_id"]}; <--- old in case i break it
   res.redirect("/urls");
 });
 
@@ -144,7 +138,6 @@ app.get("/u/:id", (req, res) => {
 // edits and replaces long URL
 app.post("/urls/:id", (req, res) => {
   const user = users[req.session["user_id"]];
-  // const user = users[req.cookies["user_id"]]; <--- old in case i break it
   const { id } = req.params;
   const longURL = req.body.longURL;
   if (user) {
@@ -159,16 +152,9 @@ app.post("/urls/:id", (req, res) => {
 // remove the url when delete button is pressed
 app.post("/urls/:id/delete", (req, res) => {
   const user = users[req.session["user_id"]];
-  // const user = users[req.cookies["user_id"]]; <--- old in case i break it
   const { id } = req.params;
   console.log(req.params);
-  // console.log(urlDatabase)
-  // console.log(urlDatabase[id])  
-  // const longURL = urlDatabase[shortID].longURL
-  // console.log("SHORT URL: ", shortURL)
-  // console.log("URL DATABASE: ", urlDatabase)
   for (let shortID in urlDatabase) {
-    // console.log("USER ID:", userID)
     if (user) {
       if (shortID === id) {
         delete urlDatabase[id];
@@ -184,8 +170,6 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = getUserByEmail(email, users);
-  console.log("PASSWORD: ", password)
-  console.log("USER PASSWORD: ", user.password)
   if (email === "") {
     res.status(403).send("403 Error: email not found");
   }
@@ -193,21 +177,18 @@ app.post("/login", (req, res) => {
     res.status(403).send("403 Error: password does not match");
   }
   req.session['user_id'] = user.id;
-  // res.cookie('user_id', user.id); <--- old in case i break it
   res.redirect("/urls");
 });
 
 // clear cookie
 app.post("/logout", (req, res) => {
   req.session = null;
-  // res.clearCookie('user_id'); <--- old in case i break it
   res.redirect("/urls");
 });
 
 // registration page for users
 app.get("/register", (req, res) => {
   const user = users[req.session["user_id"]];
-  // const user = users[req.cookies["user_id"]]; <--- old in case i break it
   let templateVars = { user: user };
   if (user) {
     res.redirect("/urls");
@@ -228,12 +209,8 @@ app.post("/register", (req, res) => {
     res.status(400).send("400 Error: email already registered");
   }
   const user = { id, email, password: bcrypt.hashSync(password, salt) };
-  // console.log("USER: ", user)
   users[id] = user;
-  // console.log("USERS ID: ", users[id])
-  // console.log("USER: ", user)
   req.session['user_id'] = id;
-  // res.cookie('user_id', id); <--- old in case i break it
   res.redirect("/urls");
 });
 
