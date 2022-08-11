@@ -3,6 +3,8 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const PORT = 8080;
 const morgan = require("morgan");
+const bcrypt = require("bcryptjs");
+const salt = bcrypt.genSaltSync(10);
 
 app.set("view engine", "ejs");
 app.use(cookieParser());
@@ -88,14 +90,6 @@ app.get("/urls", (req, res) => {
   res.status(400).send("400 Error: please login or register to view your URLs");
 });
 
-// Old code in case I screw up
-// passes URL data to template
-// app.get("/urls", (req, res) => {
-//   const user = users[req.cookies["user_id"]];
-//   let templateVars = { urls: urlDatabase, user: user };
-//   res.render("urls_index", templateVars);
-// });
-
 app.get("/urls/new", (req, res) => {
   const user = users[req.cookies["user_id"]];
   const templateVars = { user };
@@ -116,16 +110,6 @@ app.get("/urls/:id", (req, res) => {
   }
   res.status(400).send("400 Error: please login or register to view your URLs");
 });
-
-//old code in case i screw up
-// displays a single URL and it's shortened form
-// app.get("/urls/:id", (req, res) => {
-//   const user = users[req.cookies["user_id"]];
-//   const { id } = req.params;
-//   const longURL = urlDatabase[id].longURL;
-//   const templateVars = { id, longURL, user };
-//   res.render("urls_show", templateVars);
-// });
 
 // saves id and longURL key value pair to urlDatabase
 app.post("/urls", (req, res) => {
@@ -161,21 +145,6 @@ app.post("/urls/:id", (req, res) => {
   res.status(400).send("400 Error: please login to make changes to URLs");
 });
 
-// old code in case i screw up
-// edits and replaces long URL
-// app.post("/urls/:id", (req, res) => {
-//   const user = users[req.cookies["user_id"]];
-//   const { id } = req.params;
-//   const longURL = req.body.longURL;
-//   if (user) {
-//     if (urlDatabase[id].longURL) {
-//       urlDatabase[id].longURL = longURL;
-//     }
-//     res.redirect("/urls");
-//   }
-//   res.status(400).send("400 Error: please login to make changes to URLs");
-// });
-
 // remove the url when delete button is pressed
 app.post("/urls/:id/delete", (req, res) => {
   const user = users[req.cookies["user_id"]];
@@ -196,10 +165,12 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = getUserByEmail(email, users);
+  console.log("PASSWORD: ", password)
+  console.log("USER PASSWORD: ", user.password)
   if (email === "") {
     res.status(403).send("403 Error: email not found");
   }
-  if (user.password !== password) {
+  if (!bcrypt.compareSync(password, user.password)) {
     res.status(403).send("403 Error: password does not match");
   }
   res.cookie('user_id', user.id);
@@ -234,8 +205,11 @@ app.post("/register", (req, res) => {
   if (getUserByEmail(email, users)) {
     res.status(400).send("400 Error: email already registered");
   }
-  const user = { id, email, password };
+  const user = { id, email, password: bcrypt.hashSync(password, salt) };
+  // console.log("USER: ", user)
   users[id] = user;
+  // console.log("USERS ID: ", users[id])
+  // console.log("USER: ", user)
   res.cookie('user_id', id);
   res.redirect("/urls");
 });
