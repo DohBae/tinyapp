@@ -23,14 +23,14 @@ const generateRandomStrings = function() {
 
 
 const urlDatabase = {
-b2xVn2: {
-  longURL: "http://www.lighthouselabs.ca",
-  userID: "userRandomID",
-},
-"9sm5xk": {
-  longURL: "http://www.google.com",
-  userID: "userRandomID",
-},  
+  b2xVn2: {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID",
+  },
+  "9sm5xk": {
+    longURL: "http://www.google.com",
+    userID: "userRandomID",
+  },
 };
 
 const users = {
@@ -50,7 +50,7 @@ const getUserByEmail = function(userEmail, usersDatabase) {
   return null;
 };
 
-const urlsForUser = function (user) {
+const urlsForUser = function(user) {
   let userOnlyUrlDatabase = {};
   for (const url in urlDatabase) {
     if (urlDatabase[url]["userID"] === user.id) {
@@ -58,7 +58,7 @@ const urlsForUser = function (user) {
     }
   }
   return userOnlyUrlDatabase;
-}
+};
  
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -81,14 +81,12 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const user = users[req.cookies["user_id"]];
   if (user) {
-    const userDatabase = urlsForUser(user)
+    const userDatabase = urlsForUser(user);
     let templateVars = { urls: userDatabase, user: user };
-    // console.log(user.id);
-      return res.render("urls_index", templateVars);
-    }
-    // console.log(urlDatabase)
-    res.status(400).send("400 Error: please login or register to view your URLs")
-  });
+    return res.render("urls_index", templateVars);
+  }
+  res.status(400).send("400 Error: please login or register to view your URLs");
+});
 
 // Old code in case I screw up
 // passes URL data to template
@@ -116,10 +114,10 @@ app.get("/urls/:id", (req, res) => {
     const templateVars = { id, longURL, user };
     res.render("urls_show", templateVars);
   }
-  res.status(400).send("400 Error: please login or register to view your URLs")
+  res.status(400).send("400 Error: please login or register to view your URLs");
 });
 
-//old code in case i screw up 
+//old code in case i screw up
 // displays a single URL and it's shortened form
 // app.get("/urls/:id", (req, res) => {
 //   const user = users[req.cookies["user_id"]];
@@ -133,11 +131,10 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const id = generateRandomStrings();
   const longURL = req.body.longURL;
-  console.log("longURL: ",req.body)
   urlDatabase[id] = {
     longURL,
     userID: req.cookies["user_id"]};
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
 
 // redirects short URL to the long URL website
@@ -145,7 +142,7 @@ app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   
   if (!urlDatabase[shortURL]) {
-    res.status(400).send("400 Error: URL doesn't exist")
+    res.status(400).send("400 Error: URL doesn't exist");
   }
   res.redirect(urlDatabase[shortURL].longURL);
 });
@@ -163,6 +160,21 @@ app.post("/urls/:id", (req, res) => {
   }
   res.status(400).send("400 Error: please login to make changes to URLs");
 });
+
+// old code in case i screw up
+// edits and replaces long URL
+// app.post("/urls/:id", (req, res) => {
+//   const user = users[req.cookies["user_id"]];
+//   const { id } = req.params;
+//   const longURL = req.body.longURL;
+//   if (user) {
+//     if (urlDatabase[id].longURL) {
+//       urlDatabase[id].longURL = longURL;
+//     }
+//     res.redirect("/urls");
+//   }
+//   res.status(400).send("400 Error: please login to make changes to URLs");
+// });
 
 // remove the url when delete button is pressed
 app.post("/urls/:id/delete", (req, res) => {
@@ -189,7 +201,7 @@ app.post("/login", (req, res) => {
   }
   if (user.password !== password) {
     res.status(403).send("403 Error: password does not match");
-  } 
+  }
   res.cookie('user_id', user.id);
   res.redirect("/urls");
 });
