@@ -82,12 +82,12 @@ app.get("/urls/new", (req, res) => {
   const user = users[req.session["user_id"]];
   const templateVars = { user };
   if (user) {
-    res.render("urls_new", templateVars);
+    res.render("urls_new", templateVars); 
   }
   res.redirect("/login");
 });
 
-// displays a single URL and it's shortened form
+// displays a single URL and it's shortened form********************************
 app.get("/urls/:id", (req, res) => {
   const user = users[req.session["user_id"]];
   if (user) {
@@ -215,3 +215,9 @@ app.get("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log((`Example app listening on port ${PORT}!`));
 });
+
+
+
+// 3Zn1GC test1
+
+// SjPRVC test2 
