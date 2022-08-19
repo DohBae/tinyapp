@@ -55,7 +55,7 @@ const urlsForUser = function(user) {
 // Routes for different pages of the url maker
 ///////////////////////////////////////////////////////////////////////////////////////
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/login");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -106,7 +106,8 @@ app.post("/urls", (req, res) => {
   urlDatabase[id] = {
     longURL,
     userID: req.session["user_id"]};
-  res.redirect("/urls");
+  // res.redirect("/urls/:id"); 
+  res.redirect("/urls"); //<-- Original in case i break it
 });
 
 // redirects short URL to the long URL website
