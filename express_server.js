@@ -99,15 +99,15 @@ app.get("/urls/:id", (req, res) => {
   res.status(400).send("400 Error: please login or register to view your URLs");
 });
 
-// saves id and longURL key value pair to urlDatabase
+// saves id and longURL key value pair to urlDatabase**************************
 app.post("/urls", (req, res) => {
   const id = generateRandomStrings();
   const longURL = req.body.longURL;
   urlDatabase[id] = {
     longURL,
     userID: req.session["user_id"]};
-  // res.redirect("/urls/:id"); 
-  res.redirect("/urls"); //<-- Original in case i break it
+  return res.redirect(`/urls/${id}`); 
+  // res.redirect("/urls"); //<-- Original in case i break it
 });
 
 // redirects short URL to the long URL website
@@ -155,14 +155,17 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = getUserByEmail(email, users);
-  if (email === "") {
-    res.status(403).send("403 Error: email not found");
+  if (!email || !password) {
+    return res.status(400).send("400 Error: please enter in valid email and/or password")
+  }
+  if (!user) {
+    return res.status(403).send("403 Error: email not found");
   }
   if (!bcrypt.compareSync(password, user.password)) {
-    res.status(403).send("403 Error: password does not match");
+    return res.status(403).send("403 Error: password does not match");
   }
   req.session['user_id'] = user.id;
-  res.redirect("/urls");
+  return res.redirect("/urls");
 });
 
 // clear cookie
